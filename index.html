@@ -1,0 +1,591 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuesta sobre Biotecnología 🌱</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px 14px;
+    font-family: Arial, sans-serif;
+    color: #26334a;
+    background: linear-gradient(-45deg,
+        #0b3d2e, #218c68, #3977d5, #8954c7);
+    background-size: 400% 400%;
+    animation: fondo 14s ease infinite;
+}
+
+@keyframes fondo {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.contenedor {
+    max-width: 850px;
+    margin: auto;
+    padding: 30px;
+    background: rgba(255,255,255,.97);
+    border-radius: 24px;
+    box-shadow: 0 18px 55px #0004;
+    animation: aparecer .8s ease;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+header {
+    text-align: center;
+    padding-bottom: 22px;
+    border-bottom: 2px solid #e3e8f5;
+}
+
+.icono {
+    font-size: 55px;
+    animation: flotar 3s ease-in-out infinite;
+}
+
+@keyframes flotar {
+    50% { transform: translateY(-9px) rotate(5deg); }
+}
+
+h1 {
+    font-size: 32px;
+    background: linear-gradient(90deg,#16834b,#3977d5,#8954c7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+header p {
+    line-height: 1.7;
+    color: #64748b;
+}
+
+.progreso {
+    margin: 22px 0;
+    color: #4b5563;
+    font-weight: bold;
+}
+
+.barra {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#avance {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg,#18a058,#3977d5,#8954c7);
+    transition: width .35s;
+}
+
+.datos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 24px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #315d80;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 13px;
+    border: 2px solid #dbe4f0;
+    border-radius: 12px;
+    font: inherit;
+    outline: none;
+    transition: .25s;
+}
+
+input:focus, textarea:focus {
+    border-color: #3977d5;
+    box-shadow: 0 0 0 4px #3977d522;
+}
+
+.pregunta {
+    padding: 20px;
+    margin: 18px 0;
+    border-left: 5px solid #3977d5;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#f0fff6,#f2f5ff);
+    box-shadow: 0 5px 15px #26334a0c;
+    animation: aparecer .6s ease both;
+    transition: transform .25s, box-shadow .25s;
+}
+
+.pregunta:nth-of-type(even) {
+    border-left-color: #8954c7;
+}
+
+.pregunta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px #26334a18;
+}
+
+.pregunta h3 {
+    margin-top: 0;
+    line-height: 1.55;
+    color: #31558a;
+    font-size: 17px;
+}
+
+.numero {
+    color: #8954c7;
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+button {
+    flex: 1;
+    min-width: 150px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .25s;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.06);
+}
+
+button:disabled {
+    opacity: .65;
+    cursor: wait;
+    transform: none;
+}
+
+.enviar {
+    color: white;
+    background: linear-gradient(110deg,#16834b,#27a879);
+    box-shadow: 0 6px 15px #16834b33;
+}
+
+.imprimir {
+    color: #35447a;
+    background: linear-gradient(110deg,#dce9ff,#eadfff);
+}
+
+.borrar {
+    color: #9d3030;
+    background: #ffe7e7;
+}
+
+#estadoEnvio, #resultado {
+    display: none;
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 15px;
+    overflow-wrap: anywhere;
+}
+
+#estadoEnvio.ok {
+    display: block;
+    color: #14532d;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+}
+
+#estadoEnvio.error {
+    display: block;
+    color: #7f1d1d;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+}
+
+#resultado {
+    background: #f0fff5;
+    border: 2px solid #a7dfba;
+    animation: aparecer .5s ease;
+}
+
+.respuesta {
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 10px;
+    background: white;
+    overflow-wrap: anywhere;
+}
+
+.respuesta h3 {
+    color: #31558a;
+    font-size: 16px;
+}
+
+footer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 13px;
+    color: #718096;
+    line-height: 1.7;
+}
+
+@media(max-width:600px) {
+    .contenedor { padding: 19px; }
+    h1 { font-size: 25px; }
+    .datos { grid-template-columns: 1fr; }
+    .pregunta { padding: 16px; }
+    button { min-width: 100%; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+@media print {
+    body { background: white; padding: 0; }
+    .contenedor { box-shadow: none; padding: 10px; }
+    .botones, .progreso, #estadoEnvio { display: none !important; }
+    #resultado { display: block !important; }
+    .pregunta { break-inside: avoid; }
+}
+</style>
+</head>
+
+<body>
+<main class="contenedor">
+
+<header>
+    <div class="icono">🌱</div>
+    <h1>Encuesta sobre Biotecnología</h1>
+    <p><strong>Transgénicos, productos orgánicos y ambiente</strong></p>
+    <p>
+        Respondé con tus propias palabras.
+        No hay respuestas correctas o incorrectas:
+        queremos conocer tu opinión.
+    </p>
+</header>
+
+<div class="progreso">
+    <span id="textoProgreso">0 de 8 preguntas respondidas</span>
+    <div class="barra">
+        <div id="avance"></div>
+    </div>
+</div>
+
+<form id="encuesta"
+      action="https://formsubmit.app/f/mx4brgyed2"
+      method="POST">
+
+    <input type="hidden" name="_subject"
+           value="Nueva respuesta - Encuesta de Biotecnología">
+
+    <input type="text" name="_gotcha"
+           tabindex="-1" autocomplete="off"
+           style="display:none" aria-hidden="true">
+
+    <div class="datos">
+        <div>
+            <label for="nombre">Nombre (opcional)</label>
+            <input type="text" id="nombre" name="Nombre"
+                   placeholder="Escribí tu nombre">
+        </div>
+
+        <div>
+            <label for="edad">Edad (opcional)</label>
+            <input type="number" id="edad" name="Edad"
+                   min="1" max="120" placeholder="Tu edad">
+        </div>
+    </div>
+
+    <section class="pregunta">
+        <h3><span class="numero">01.</span>
+        ¿Qué creés que es la biotecnología?</h3>
+        <textarea id="r1" name="Respuesta 1"
+        placeholder="Escribí tu respuesta..." required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">02.</span>
+        Mencioná un ejemplo de dónde se aplica la biotecnología.</h3>
+        <textarea id="r2" name="Respuesta 2"
+        placeholder="Por ejemplo, en la medicina o agricultura..."
+        required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">03.</span>
+        ¿Qué es un producto transgénico?</h3>
+        <textarea id="r3" name="Respuesta 3"
+        placeholder="Escribí lo que sabés..." required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">04.</span>
+        ¿Cómo creés que la biotecnología puede afectar a un organismo,
+        como una planta de tomate?</h3>
+        <textarea id="r4" name="Respuesta 4"
+        placeholder="Pensá en su crecimiento y resistencia..."
+        required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">05.</span>
+        ¿Cuáles creés que deberían ser los límites de la biotecnología
+        a nivel ético?</h3>
+        <textarea id="r5" name="Respuesta 5"
+        placeholder="Expresá tu opinión..." required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">06.</span>
+        ¿Es lo mismo un producto transgénico que uno orgánico?
+        ¿Por qué?</h3>
+        <textarea id="r6" name="Respuesta 6"
+        placeholder="Explicá las diferencias..." required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">07.</span>
+        ¿Cómo puede afectar la biotecnología al ambiente?</h3>
+        <textarea id="r7" name="Respuesta 7"
+        placeholder="Pensá en el suelo, el agua y la biodiversidad..."
+        required></textarea>
+    </section>
+
+    <section class="pregunta">
+        <h3><span class="numero">08.</span>
+        ¿Cómo puede afectar la polinización de plantas transgénicas
+        a plantas orgánicas?</h3>
+        <textarea id="r8" name="Respuesta 8"
+        placeholder="Pensá en el traslado del polen entre plantas..."
+        required></textarea>
+    </section>
+
+    <div class="botones">
+        <button type="submit" class="enviar">
+            📩 Finalizar y enviar
+        </button>
+
+        <button type="button" class="imprimir"
+                onclick="imprimirEncuesta()">
+            🖨️ Guardar PDF
+        </button>
+
+        <button type="reset" class="borrar">
+            🗑️ Borrar respuestas
+        </button>
+    </div>
+</form>
+
+<div id="estadoEnvio" role="status" aria-live="polite"></div>
+
+<section id="resultado">
+    <h2>📋 Respuestas de la encuesta</h2>
+    <p id="datosPersona"></p>
+    <div id="respuestas"></div>
+
+    <button type="button" class="imprimir"
+            onclick="imprimirEncuesta()">
+        🖨️ Imprimir respuestas
+    </button>
+</section>
+
+<footer>
+    Encuesta educativa sobre biotecnología, transgénicos
+    y productos orgánicos 🌿<br>
+    ¡Gracias por participar!
+</footer>
+
+</main>
+
+<script>
+const FORMULARIO_URL =
+    "https://formsubmit.app/f/mx4brgyed2";
+
+const formulario = document.getElementById("encuesta");
+const resultado = document.getElementById("resultado");
+const estadoEnvio = document.getElementById("estadoEnvio");
+
+const preguntas = [
+    "¿Qué creés que es la biotecnología?",
+    "Mencioná un ejemplo de dónde se aplica la biotecnología.",
+    "¿Qué es un producto transgénico?",
+    "¿Cómo puede afectar la biotecnología a una planta de tomate?",
+    "¿Cuáles deberían ser los límites éticos de la biotecnología?",
+    "¿Es lo mismo un producto transgénico que uno orgánico? ¿Por qué?",
+    "¿Cómo puede afectar la biotecnología al ambiente?",
+    "¿Cómo puede afectar la polinización de plantas transgénicas a plantas orgánicas?"
+];
+
+// Actualizar la barra de progreso.
+function actualizarProgreso() {
+    let cantidad = 0;
+
+    for (let i = 1; i <= 8; i++) {
+        if (document.getElementById("r" + i).value.trim()) {
+            cantidad++;
+        }
+    }
+
+    document.getElementById("textoProgreso").textContent =
+        cantidad + " de 8 preguntas respondidas";
+
+    document.getElementById("avance").style.width =
+        (cantidad / 8 * 100) + "%";
+}
+
+for (let i = 1; i <= 8; i++) {
+    document.getElementById("r" + i)
+        .addEventListener("input", actualizarProgreso);
+}
+
+// Enviar respuestas a FormSubmit.
+formulario.addEventListener("submit", async function(evento) {
+    evento.preventDefault();
+
+    if (!formulario.reportValidity()) return;
+
+    const boton = formulario.querySelector(".enviar");
+    boton.disabled = true;
+    boton.textContent = "📨 Enviando...";
+
+    estadoEnvio.className = "";
+    estadoEnvio.style.display = "none";
+
+    try {
+        const nombre =
+            document.getElementById("nombre").value.trim();
+
+        const edad =
+            document.getElementById("edad").value.trim();
+
+        // Recopilar los campos que tienen atributo name.
+        const datos = new FormData(formulario);
+
+        // Agregar los enunciados de las preguntas al correo.
+        preguntas.forEach(function(pregunta, indice) {
+            datos.append("Pregunta " + (indice + 1), pregunta);
+        });
+
+        // Enviar al servicio que proporcionaste.
+        const respuesta = await fetch(FORMULARIO_URL, {
+            method: "POST",
+            body: datos,
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        let datosServidor;
+
+        try {
+            datosServidor = await respuesta.json();
+        } catch {
+            throw new Error("La respuesta del servidor no es válida.");
+        }
+
+        if (!respuesta.ok || datosServidor.ok !== true) {
+            throw new Error(
+                datosServidor.error || "No se pudo confirmar el envío."
+            );
+        }
+
+        // Mostrar las respuestas en la página.
+        document.getElementById("datosPersona").textContent =
+            "Nombre: " + (nombre || "No indicado") +
+            " | Edad: " + (edad || "No indicada");
+
+        const contenedor = document.getElementById("respuestas");
+        contenedor.replaceChildren();
+
+        for (let i = 1; i <= 8; i++) {
+            const respuestaTexto =
+                document.getElementById("r" + i).value.trim();
+
+            const bloque = document.createElement("div");
+            bloque.className = "respuesta";
+
+            const titulo = document.createElement("h3");
+            titulo.textContent = (i < 10 ? "0" : "") + i +
+                ". " + preguntas[i - 1];
+
+            const texto = document.createElement("p");
+            texto.textContent = respuestaTexto;
+
+            bloque.append(titulo, texto);
+            contenedor.appendChild(bloque);
+        }
+
+        resultado.style.display = "block";
+
+        estadoEnvio.className = "ok";
+        estadoEnvio.textContent =
+            "✅ ¡La encuesta fue enviada correctamente! " +
+            "Gracias por participar.";
+
+    } catch (error) {
+        estadoEnvio.className = "error";
+        estadoEnvio.textContent =
+            "⚠️ No pudimos confirmar el envío. Revisá tu conexión " +
+            "y la configuración de FormSubmit. Tus respuestas siguen " +
+            "en la página: no las borres. Podés guardarlas en PDF " +
+            "e intentar enviarlas nuevamente.";
+
+        console.error("Error al enviar la encuesta:", error);
+
+    } finally {
+        estadoEnvio.style.display = "block";
+
+        boton.disabled = false;
+        boton.textContent = "📩 Finalizar y enviar";
+
+        estadoEnvio.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+});
+
+function imprimirEncuesta() {
+    window.print();
+}
+
+// Limpiar los resultados al borrar el formulario.
+formulario.addEventListener("reset", function() {
+    resultado.style.display = "none";
+    estadoEnvio.className = "";
+    estadoEnvio.style.display = "none";
+
+    setTimeout(actualizarProgreso, 0);
+});
+</script>
+
+</body>
+</html>
+
